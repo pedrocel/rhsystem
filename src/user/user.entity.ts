@@ -25,4 +25,10 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+  
+  @Column()
+  deleted_at: Date;
+
+  @Column()
+  deleted_by: number
 }

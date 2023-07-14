@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
+import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 
 @Injectable()
 export class UserService {
@@ -44,10 +45,15 @@ export class UserService {
   async deleteUser(id: number) {
     const user = await this.userRepository.findOne({ where: {id}});
 
-    if (!user) {
-      throw new Error("Usuário não encontrado.");
+    const newUser = {
+      deleted_at: new Date,
+      deleted_by: 10,
     }
 
-    return await this.userRepository.delete(user);
+    if (!user) {
+      throw new HttpException({message: "Usuário não encontrado.", status:404}, 404);
+    }
+
+    return await this.userRepository.update(id, newUser);
   }
 }
